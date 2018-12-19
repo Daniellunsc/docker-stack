@@ -1,0 +1,31 @@
+version: '3.5'
+services: 
+  back:
+    environment:
+      - FLASK_ENV=development
+    image: docker-flask
+    container_name: back_flask
+    ports: 
+      - 5000:5000
+      - 5050:5050
+    volumes:
+      - ./server:/app
+    depends_on:
+      [db]
+  front:
+    image: react-app
+    container_name: front_react
+    ports:
+      - 3000:3000
+    depends_on:
+      [back,
+      db]
+    volumes:
+      - ./client:/app
+  db:
+    image: postgres
+    container_name: db
+    environment: 
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5432:5432
