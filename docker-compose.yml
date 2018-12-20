@@ -48,8 +48,17 @@ services:
     image: postgres
     container_name: db
     volumes:
-      - ./:/docker-entrypoint-initdb.d
+      - ./config:/docker-entrypoint-initdb.d
     environment: 
       - POSTGRES_PASSWORD=1234
     ports:
       - 5432:5432
+  gateway:
+    image: nrel/api-umbrella
+    container_name: gateway
+    volumes:
+      - ./config:/etc/api-umbrella
+    ports:
+      - 80:80
+      - 443:443
+
