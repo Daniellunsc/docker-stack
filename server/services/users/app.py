@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from pydal import DAL
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -8,17 +8,18 @@ from flask_jwt_extended import (
 )
 
 app = Flask(__name__)
-app.config['DATABASE_URI'] = 'postgres://postgres:1234@localhost:5432/users'
+app.config['DATABASE_URI'] = 'postgres://postgres:1234@db:5432/users'
 app.config['JWT_SECRET_KEY'] = 'servicekeyscreted'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_CSRF_IN_COOKIES'] = True
 jwt = JWTManager(app)
-db = DAL(app.config['DATABASE_URI'], folder="services/users/migrations")
+db = DAL(app.config['DATABASE_URI'], folder="./migrations",  migrate=False, fake_migrate=True)
 from models import *
 
 @app.route('/')
 def home():
-    return jsonify(msg="HELLO FROM USERS SERVICES")
-
+    return jsonify(msg="HELLO FROM USER")
+    
 @app.route('/auth', methods=['POST'])
 def auth():
     db._adapter.reconnect()
@@ -30,12 +31,18 @@ def auth():
     if user:
         access_token = create_access_token(identity=user.id)
         refresh_token = create_refresh_token(identity=user.id)
-        resp = jsonify(token=access_token)
+        resp = jsonify(token=access_token, status="success")
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, 200
     else:
         return jsonify(msg="Not a user"), 404
+
+
+@app.route('/auth/check', methods=['GET'])
+@jwt_required
+def check():
+    return jsonify(msg="SUCCESS"), 200
     
 
 @app.route('/users/register', methods=['POST'])
@@ -47,4 +54,4 @@ def user_req():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True, host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001)

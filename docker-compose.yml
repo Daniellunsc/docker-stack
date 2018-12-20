@@ -22,6 +22,28 @@ services:
   #     db]
   #   volumes:
   #     - ./client:/app
+  todo_service:
+    environment:
+      - FLASK_ENV=production
+    image: docker-flask
+    container_name: todo_service
+    ports:
+      - 5002:5002
+    volumes:
+      - ./server/services/todo:/app
+    depends_on:
+      [db]
+  user_service:
+    environment:
+      - FLASK_ENV=production
+    image: docker-flask
+    container_name: user_service
+    ports:
+      - 5001:5001
+    volumes:
+      - ./server/services/users:/app
+    depends_on:
+      [db]
   db:
     image: postgres
     container_name: db

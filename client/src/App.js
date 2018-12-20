@@ -1,24 +1,28 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import LoginScreen from './Screens/LoginScreen';
+import TodoScreen from './Screens/TodoScreen';
+import ProtectedRoute from './Components/ProtectedRoute';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 class App extends Component {
   state = {
-    name: "",
-  }
-  componentDidMount(){
-    fetch('/api/message').then(res => res.json()).then(dt => this.setState({name: dt.msg}))
+    usuario: "",
+    senha: "",
   }
 
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            {this.state.name}
-          </p>
-        </header>
+        <div className="App-header">
+          <Router>
+            <Switch>
+              <Route exact path="/login" component={LoginScreen} />
+              <Route exact path="/mytodos" component={ProtectedRoute(TodoScreen)} />
+            </Switch>
+          </Router>
+        </div>
+
       </div>
     );
   }

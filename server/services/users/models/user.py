@@ -1,4 +1,4 @@
-from user import db
+from app import db
 from pydal import Field
 
 db.define_table('users',
