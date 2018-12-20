@@ -11,8 +11,8 @@ app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_CSRF_IN_COOKIES'] = True
 jwt = JWTManager(app)
 
-db = DAL(app.config['DATABASE_URI'], folder="services/todo/migrations", migrate=False, fake_migrate=True)
-from models import *
+db = DAL(app.config['DATABASE_URI'], folder="./migrations")
+
 
 @app.route('/todos', methods=['GET'])
 @jwt_required
@@ -35,4 +35,5 @@ def todos():
 
 
 if __name__ == '__main__':
+    from models import *
     app.run(host="0.0.0.0", port=5002)
